@@ -1,13 +1,17 @@
-from google.cloud import vision
-from google.oauth2 import service_account
 from pathlib import Path
 import re
+import sys
+from google.cloud import vision
+from google.oauth2 import service_account
 
 KEY_PATH = r"C:\Users\rahej\Documents\Programming\Keys\woven.json"
 
-IMAGE_PATH = "test.png"
+BASE_DIR = Path(__file__).resolve().parent         # folder of this file
+DEFAULT_IMAGE = BASE_DIR / "test.png"              # .../src/test.png
+# allow CLI override: python src/main.py path/to/img.png
+IMAGE_PATH = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_IMAGE
 
-def make_client(key_path: str) -> "vision.ImageAnnotatorClient":
+def make_client(key_path) -> "vision.ImageAnnotatorClient":
     creds = service_account.Credentials.from_service_account_file(key_path)
     return vision.ImageAnnotatorClient(credentials=creds)
 
