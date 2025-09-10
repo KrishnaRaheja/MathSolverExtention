@@ -1,6 +1,5 @@
 from pathlib import Path
 import re
-import sys
 from google.cloud import vision
 from google.oauth2 import service_account
 from sympy import Eq, symbols, simplify, solve
@@ -15,18 +14,12 @@ TWO WAYS OF DOING THIS:
 1. Snipping tool automatically saves to clipboard, so program could watch for an image in clipboard to solve
 2. Change snipping tool save location to project folder, and read from project
 
-
 -Skill shown: Building off of existing availible tools like snipping tool
 """
 
 # -----------------------------------------Setup:
 
 KEY_PATH = r"C:\Users\rahej\Documents\Programming\Keys\woven.json"
-
-# BASE_DIR = Path(__file__).resolve().parent
-# DEFAULT_IMAGE = BASE_DIR / "test2.png"
-# # allow CLI override: python src/main.py path/to/img.png
-# IMAGE_PATH = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_IMAGE
 
 def make_client(key_path) -> "vision.ImageAnnotatorClient":
     creds = service_account.Credentials.from_service_account_file(key_path)
@@ -82,42 +75,21 @@ def _normalize_line_for_solver(line: str) -> str:
     if not line:
         return ""
 
-    # removes spaces or long spaces (tab space \t)
+    """removes spaces or long spaces (tab space \t)"""
     s = line.replace(" ", "").replace("\t", "")
 
-    # puts * symbol 
+    """Insert '*' between a digit and a letter or '(', e.g.:
+      10x     → 10*x
+      3(x+1)  → 3*(x+1)"""
     s = re.sub(r'(?<=\d)(?=[A-Za-z(])', '*', s)
     
-    # letter or ')' before digit or '(' -> x2, x( -> x*2, x*(...
+    """Insert '*' between a letter or ')' and a digit or '(', e.g.:
+      x2      → x*2
+      x(2)    → x*(2)
+      (x+1)(x-1) → (x+1)*(x-1)"""
     s = re.sub(r'(?<=[A-Za-z\)])(?=\d|\()', '*', s)
 
     return s
-
-# -----------------------------------------Document detection:
-
-# def detect_document(path: str, client: "vision.ImageAnnotatorClient") -> str:
-#     """Returns a single-line, solver-ready math expression from the image."""
-#     content = Path(path).read_bytes()
-#     image = vision.Image(content=content)
-
-#     response = client.document_text_detection(image=image)
-
-#     if response.error.message:
-#         raise RuntimeError(
-#             f"Vision API error: {response.error.message}\n"
-#             "See: https://cloud.google.com/apis/design/errors"
-#         )
-
-#     stitched = response.full_text_annotation.text or ""
-#     # 1) Normalize glyphs but KEEP line breaks
-#     stitched_norm = _ascii_ops_and_supers(stitched)
-#     # 2) Choose the best single line
-#     best_line = _pick_best_math_line(stitched_norm)
-#     # 3) Make that one line solver-ready
-#     expr = _normalize_line_for_solver(best_line)
-
-#     print(expr)  # prints expression
-#     return expr
 
 # -----------------------------------------Solving problem:
 
