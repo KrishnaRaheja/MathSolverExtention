@@ -30,3 +30,4 @@ python src/main.py
 1. Start the program.
 2. Take a screenshot with **Win + Shift + S**.
 3. Press **Enter** in the terminal to see the solution.
+4. pip install google-cloud-vision sympy pillow/(n)
