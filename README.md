@@ -17,12 +17,12 @@ MathSolverExtension uses the **Google Vision API** and **SymPy** to read and sol
 pip install google-cloud-vision sympy pillow
 ```
 
-2. Add your Google Cloud Vision API key path to `KEY_PATH` in the script.
+2. Add your Google Cloud Vision API key path to `KEY_PATH` in `src/ocr.py`.
 
 3. Run the program:
 
 ```bash
-python mathsolver.py
+python src/main.py
 ```
 
 ## Usage
